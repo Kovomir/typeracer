@@ -3,4 +3,9 @@ html, body {
     padding: 0;
     height: 100vh;
     box-sizing: border-box;
+    min-height: 100vh;
+    background: url('/blurry-gradient-haikei.svg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
 }
