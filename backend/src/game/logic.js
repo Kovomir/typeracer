@@ -1,5 +1,5 @@
-import { players, currentGameText } from './state.js';
-import {GAME_TEXTS } from './const.js';
+import {players, currentGameText, gameState} from './state.js';
+import {GAME_TEXTS, gameStates, MAX_PLAYERS, MIN_PLAYERS} from './const.js';
 
 export const getPlayersList = () => {
   return players.map(player => ({

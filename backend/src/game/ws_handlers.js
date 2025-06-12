@@ -1,11 +1,6 @@
-import {
-  getPlayersList,
-  calculateProgress,
-  generateGameText,
-  broadcastToAllPlayers,
-} from "../game/logic.js";
-import { MAX_PLAYERS, MIN_PLAYERS, gameStates } from "../game/const.js";
-import { players, gameState } from "../game/state.js";
+import {broadcastToAllPlayers, calculateProgress, generateGameText, getPlayersList,} from "./logic.js";
+import {gameStates, MAX_PLAYERS, MIN_PLAYERS} from "./const.js";
+import {gameState, players} from "./state.js";
 import crypto from "crypto";
 
 export const handleMessage = (ws, data, connectionMap) => {
