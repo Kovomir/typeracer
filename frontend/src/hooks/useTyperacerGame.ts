@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 
 const WS_URL = "ws://localhost:3001";
 
+type Player {
+}
+
 export function useTyperacerGame() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [gameText, setGameText] = useState("");
   const [input, setInput] = useState("");
-  const [players, setPlayers] = useState<any[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [gameState, setGameState] = useState("waiting");
   const [rankings, setRankings] = useState<any[]>([]);

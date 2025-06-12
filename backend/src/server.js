@@ -1,7 +1,7 @@
-import { WebSocketServer } from 'ws';
 import { handleMessage } from './game/ws_handlers.js';
 import { connectionMap } from './game/state.js';
 import { removePlayer } from './game/logic.js';
+import {WebSocketServer} from "ws";
 
 const wss = new WebSocketServer({ port: 3001 });
 
