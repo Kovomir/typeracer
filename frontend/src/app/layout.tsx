@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Image from "next/image";
 import "../globals.css";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Typeracer",
