@@ -18,10 +18,13 @@ const LobbyPage: React.FC<LobbyPageProps> = ({
   isReady,
   sendReady,
 }) => {
+  const currentPlayer = players.find((p) => p.id === playerId);
+  const isCurrentPlayerReady = currentPlayer?.isReady || false;
+
   // Set up enter key listener
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !isReady) {
+      if (e.key === "Enter" && !isCurrentPlayerReady) {
         sendReady();
       }
     };
@@ -30,7 +33,7 @@ const LobbyPage: React.FC<LobbyPageProps> = ({
     return () => {
       window.removeEventListener("keyup", handleKeyPress);
     };
-  }, [isReady, sendReady]);
+  }, [sendReady, isCurrentPlayerReady]);
 
   return (
     <Box p={4} maxWidth={500} mx="auto">
@@ -42,19 +45,20 @@ const LobbyPage: React.FC<LobbyPageProps> = ({
       </Typography>
       <Button
         variant="contained"
-        color={isReady ? "success" : "primary"}
-        disabled={isReady}
+        color={isCurrentPlayerReady ? "success" : "primary"}
         onClick={sendReady}
         sx={{ mb: 2 }}
       >
-        {isReady ? "Ready! Waiting for others..." : "I'm Ready (press Enter)"}
+        Ready {isCurrentPlayerReady ? "✓" : "✗"}
       </Button>
-      <Typography variant="h6">Players</Typography>
+      <Typography variant="h6" mt={2}>
+        Players
+      </Typography>
       <List>
         {players.map((p) => (
           <PlayerProgress
             key={p.id}
-            name={p.name + (p.isReady ? " (Ready)" : "")}
+            name={`${p.name} ${p.isReady ? "✓" : "✗"}`}
             charsTyped={0}
             totalChars={0}
             text=""
@@ -63,7 +67,9 @@ const LobbyPage: React.FC<LobbyPageProps> = ({
         ))}
       </List>
       <Typography variant="body2" color="text.secondary">
-        Waiting for all players to be ready...
+        {players.every((p) => p.isReady)
+          ? "All players ready! Game starting..."
+          : "Waiting for all players to be ready..."}
       </Typography>
     </Box>
   );

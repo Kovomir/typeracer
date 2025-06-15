@@ -16,4 +16,3 @@ export const GAME_TEXTS = [
   "It was the best of times, it was the worst of times, it was the age of wisdom."
 ];
 
-export let currentGameText = '';

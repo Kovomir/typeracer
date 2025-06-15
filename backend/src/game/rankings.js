@@ -1,4 +1,4 @@
-import { players, currentGameText } from './state.js';
+import { players, gameState } from './state.js';
 
 export const calculateRankings = () => {
   // Sort players by their status and progress
@@ -6,7 +6,7 @@ export const calculateRankings = () => {
     playerId: player.id,
     playerName: player.name,
     charsTyped: player.currentText.length,
-    totalChars: currentGameText.length,
+    totalChars: gameState.currentText.length,
     finishTime: player.finishTime,
     isFinished: player.finished,
   }));

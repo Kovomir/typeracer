@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useWebSocket } from "./useWebSocket";
 import { GameState, Player, Ranking } from "../types/game";
 
@@ -16,6 +16,34 @@ export function useTyperacerGame() {
 
   const { isConnected, sendMessage, subscribeToMessages } = useWebSocket(name, hasJoined);
 
+  const sendReady = useCallback(() => {
+    sendMessage({
+      type: "player_ready"
+    });
+  }, [sendMessage]);
+
+  const joinWithName = useCallback((userName: string) => {
+    setName(userName);
+    setHasJoined(true);
+  }, []);
+
+  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (!gameText) return;
+    
+    if (val.length > input.length) {
+      const nextChar = gameText[input.length];
+      if (val[val.length - 1] === nextChar) {
+        const newInput = input + nextChar;
+        setInput(newInput);
+        sendMessage({ type: "typing_update", text: newInput });
+      }
+    } else if (val.length < input.length) {
+      setInput(val);
+      sendMessage({ type: "typing_update", text: val });
+    }
+  }, [gameText, input, sendMessage]);
+
   useEffect(() => {
     if (!isConnected) return;
 
@@ -30,6 +58,11 @@ export function useTyperacerGame() {
         case "player_ready":
           setPlayers(msg.players);
           setGameState(msg.gameState);
+          // Find current player in updated players list to sync ready state
+          const currentPlayer = msg.players.find((p: Player) => p.id === playerId);
+          if (currentPlayer) {
+            setIsReady(currentPlayer.isReady || false);
+          }
           break;
         case "game_started":
           setGameText(msg.gameText);
@@ -52,45 +85,9 @@ export function useTyperacerGame() {
           setGameState("finished");
           setRankings(msg.rankings);
           break;
-        case "game_aborted":
-          setGameState("waiting");
-          setPlayers(msg.players);
-          setGameText("");
-          setInput("");
-          setRankings([]);
-          setIsReady(false);
-          setHasJoined(false);
-          break;
       }
     });
-  }, [isConnected, subscribeToMessages]);
-
-  function joinWithName(userName: string) {
-    setName(userName);
-    setHasJoined(true);
-  }
-
-  function sendReady() {
-    sendMessage({ type: "player_ready" });
-    setIsReady(true);
-  }
-
-  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = e.target.value;
-    if (!gameText) return;
-    
-    if (val.length > input.length) {
-      const nextChar = gameText[input.length];
-      if (val[val.length - 1] === nextChar) {
-        const newInput = input + nextChar;
-        setInput(newInput);
-        sendMessage({ type: "typing_update", text: newInput });
-      }
-    } else if (val.length < input.length) {
-      setInput(val);
-      sendMessage({ type: "typing_update", text: val });
-    }
-  }
+  }, [isConnected, playerId, subscribeToMessages]);
 
   return {
     gameText,
