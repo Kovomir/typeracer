@@ -140,29 +140,34 @@ export const handleMessage = (ws, data, connectionMap) => {
         
         player.currentText = data.text;
         calculateProgress(player);
-        
-        if (player.currentText.length === gameState.currentText.length && !player.finished) {
+          if (player.currentText.length === gameState.currentText.length && !player.finished) {
           player.finished = true;
           player.finishTime = Date.now() - player.startTime;
           console.log(`🏁 Player finished: ${player.name} (${player.id}) - Time: ${(player.finishTime / 1000).toFixed(2)}s`);
           
-          // Check if all players finished
-          const allFinished = players.every(p => p.finished);
-          if (allFinished) {
-            gameState.value = gameStates.FINISHED;
-            const rankings = calculateRankings();
-            console.log('🏆 Game finished! Final rankings:');
-            rankings.forEach((rank, index) => {
-              console.log(`   ${index + 1}. ${rank.playerName} - ${(rank.finishTime / 1000).toFixed(2)}s`);
-            });
-            
-            broadcastToAllPlayers(players, {
-              type: "game_finished",
-              rankings,
-              gameState: gameState.value,
-            });
-            return;
-          }
+          // End game immediately when first player finishes
+          gameState.value = gameStates.FINISHED;
+          
+          // Set finish times for other players based on their progress
+          players.forEach(p => {
+            if (!p.finished) {
+              p.finished = true;
+              p.finishTime = Date.now() - p.startTime;
+            }
+          });
+          
+          const rankings = calculateRankings();
+          console.log('🏆 Game finished! Final rankings:');
+          rankings.forEach((rank, index) => {
+            console.log(`   ${index + 1}. ${rank.playerName} - ${(rank.finishTime / 1000).toFixed(2)}s`);
+          });
+          
+          broadcastToAllPlayers(players, {
+            type: "game_finished",
+            rankings,
+            gameState: gameState.value,
+          });
+          return;
         }
 
         // Only log progress every 10%
