@@ -1,65 +1,69 @@
 import { useEffect, useRef, useState } from "react";
-
-const WS_URL = "ws://localhost:3001";
-
-type Player {
-}
+import { useWebSocket } from "./useWebSocket";
+import { GameState, Player, Ranking } from "../types/game";
 
 export function useTyperacerGame() {
-  const [ws, setWs] = useState<WebSocket | null>(null);
   const [gameText, setGameText] = useState("");
   const [input, setInput] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
   const [playerId, setPlayerId] = useState<string | null>(null);
-  const [gameState, setGameState] = useState("waiting");
-  const [rankings, setRankings] = useState<any[]>([]);
+  const [gameState, setGameState] = useState<GameState>("waiting");
+  const [rankings, setRankings] = useState<Ranking[]>([]);
   const [name, setName] = useState<string>("");
   const [hasJoined, setHasJoined] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
+
+  const { isConnected, sendMessage, subscribeToMessages } = useWebSocket(name, hasJoined);
 
   useEffect(() => {
-    if (!hasJoined || !name) return;
-    const socket = new WebSocket(WS_URL);
-    setWs(socket);
-    socket.onopen = () => {
-      socket.send(JSON.stringify({ type: "join_game", playerName: name }));
-    };
-    socket.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.type === "game_joined") {
-        setPlayerId(msg.playerId);
-        setPlayers(msg.players);
-        setGameState(msg.gameState);
-      } else if (msg.type === "player_joined" || msg.type === "player_ready") {
-        setPlayers(msg.players);
-        setGameState(msg.gameState);
-      } else if (msg.type === "game_started") {
-        setGameText(msg.gameText);
-        setPlayers(msg.players);
-        setInput("");
-        setGameState("active");
-        setRankings([]);
-        setIsReady(false);
-        setTimeout(() => inputRef.current?.focus(), 100);
-      } else if (msg.type === "player_progress") {
-        setPlayers((prev) => prev.map(p => p.id === msg.playerId ? { ...p, progress: msg.progress, finished: msg.finished } : p));
-      } else if (msg.type === "game_finished") {
-        setGameState("finished");
-        setRankings(msg.rankings);
-      } else if (msg.type === "game_aborted") {
-        setGameState("waiting");
-        setPlayers(msg.players);
-        setGameText("");
-        setInput("");
-        setRankings([]);
-        setIsReady(false);
-        setHasJoined(false);
+    if (!isConnected) return;
+
+    subscribeToMessages((msg) => {
+      switch (msg.type) {
+        case "game_joined":
+          setPlayerId(msg.playerId);
+          setPlayers(msg.players);
+          setGameState(msg.gameState);
+          break;
+        case "player_joined":
+        case "player_ready":
+          setPlayers(msg.players);
+          setGameState(msg.gameState);
+          break;
+        case "game_started":
+          setGameText(msg.gameText);
+          setPlayers(msg.players);
+          setInput("");
+          setGameState("active");
+          setRankings([]);
+          setIsReady(false);
+          setTimeout(() => inputRef.current?.focus(), 100);
+          break;
+        case "player_progress":
+          setPlayers((prev) => 
+            prev.map(p => p.id === msg.playerId 
+              ? { ...p, progress: msg.progress, finished: msg.finished } 
+              : p
+            )
+          );
+          break;
+        case "game_finished":
+          setGameState("finished");
+          setRankings(msg.rankings);
+          break;
+        case "game_aborted":
+          setGameState("waiting");
+          setPlayers(msg.players);
+          setGameText("");
+          setInput("");
+          setRankings([]);
+          setIsReady(false);
+          setHasJoined(false);
+          break;
       }
-    };
-    socket.onclose = () => setWs(null);
-    return () => socket.close();
-  }, [hasJoined, name]);
+    });
+  }, [isConnected, subscribeToMessages]);
 
   function joinWithName(userName: string) {
     setName(userName);
@@ -67,32 +71,24 @@ export function useTyperacerGame() {
   }
 
   function sendReady() {
-    if (ws) {
-      ws.send(JSON.stringify({ type: "player_ready" }));
-      setIsReady(true);
-    }
+    sendMessage({ type: "player_ready" });
+    setIsReady(true);
   }
-
-  useEffect(() => {
-    if (ws && gameState === "lobby" && isReady) {
-      // Already sent ready, do nothing
-      return;
-    }
-  }, [ws, gameState, isReady]);
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
     if (!gameText) return;
+    
     if (val.length > input.length) {
       const nextChar = gameText[input.length];
       if (val[val.length - 1] === nextChar) {
         const newInput = input + nextChar;
         setInput(newInput);
-        ws?.send(JSON.stringify({ type: "typing_update", text: newInput }));
+        sendMessage({ type: "typing_update", text: newInput });
       }
     } else if (val.length < input.length) {
       setInput(val);
-      ws?.send(JSON.stringify({ type: "typing_update", text: val }));
+      sendMessage({ type: "typing_update", text: val });
     }
   }
 

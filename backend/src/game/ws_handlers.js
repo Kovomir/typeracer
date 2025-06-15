@@ -1,6 +1,7 @@
 import {broadcastToAllPlayers, calculateProgress, generateGameText, getPlayersList,} from "./logic.js";
 import {gameStates, MAX_PLAYERS, MIN_PLAYERS} from "./const.js";
-import {gameState, players} from "./state.js";
+import {gameState, players, currentGameText} from "./state.js";
+import {calculateRankings} from "./rankings.js";
 import crypto from "crypto";
 
 export const handleMessage = (ws, data, connectionMap) => {
@@ -67,59 +68,66 @@ export const handleMessage = (ws, data, connectionMap) => {
     }
 
     case "player_ready": {
-      if (!player || gameState.value !== gameStates.LOBBY) return;
-
+      if (!player) {
+        console.error('Player not found!')
+        return;
+      }
       player.isReady = true;
 
-      broadcastToAllPlayers(players, {
-        type: "player_ready",
-        playerId: player.id,
-        players: getPlayersList(),
-      });
-
-      console.log(
-        `${player.name} is ready! (${players.filter((p) => p.isReady).length}/${
-          players.length
-        })`
-      );
-
-      const allReady = players.every((p) => p.isReady);
-
-      if (players.length >= MIN_PLAYERS && allReady) {
+      const allReady = players.length >= MIN_PLAYERS && players.every((p) => p.isReady);
+      
+      if (allReady) {
         gameState.value = gameStates.ACTIVE;
         const gameText = generateGameText();
-
-        players.forEach((p) => {
+        const startTime = Date.now();
+        
+        // Reset all players' state for new game
+        players.forEach(p => {
           p.progress = 0;
           p.currentText = "";
           p.finished = false;
-          p.rank = null;
+          p.finishTime = null;
+          p.startTime = startTime;
         });
 
         broadcastToAllPlayers(players, {
           type: "game_started",
           gameText,
           players: getPlayersList(),
+          gameState: gameState.value,
         });
-
-        console.log("🟢 Game started with text:", gameText);
+        return;
       }
 
+      broadcastToAllPlayers(players, {
+        type: "player_ready",
+        players: getPlayersList(),
+      });
       break;
     }
 
     case "typing_update": {
       if (!player || gameState.value !== gameStates.ACTIVE) return;
-
-      player.currentText = data.text || "";
+      
+      player.currentText = data.text;
       calculateProgress(player);
-
-      if (
-        player.currentText.length >= currentGameText.length &&
-        !player.finished
-      ) {
+      
+      if (player.currentText.length === currentGameText.length && !player.finished) {
         player.finished = true;
-        console.log(`${player.name} finished!`);
+        player.finishTime = Date.now() - player.startTime;
+        
+        // Check if all players finished
+        const allFinished = players.every(p => p.finished);
+        if (allFinished) {
+          gameState.value = gameStates.FINISHED;
+          const rankings = calculateRankings();
+          broadcastToAllPlayers(players, {
+            type: "game_finished",
+            rankings,
+            gameState: gameState.value,
+          });
+          return;
+        }
       }
 
       broadcastToAllPlayers(players, {
@@ -128,28 +136,6 @@ export const handleMessage = (ws, data, connectionMap) => {
         progress: player.progress,
         finished: player.finished,
       });
-
-      const finished = players.some((p) => p.finished);
-
-      if (finished) {
-        gameState.value = gameStates.FINISHED;
-
-        const sorted = [...players].sort((a, b) => {
-          if (a.finished && !b.finished) return -1;
-          if (!a.finished && b.finished) return 1;
-          return b.progress - a.progress;
-        });
-
-        sorted.forEach((p, i) => (p.rank = i + 1));
-
-        broadcastToAllPlayers(players, {
-          type: "game_finished",
-          rankings: getPlayersList().sort((a, b) => a.rank - b.rank),
-        });
-
-        console.log("🏁 Game finished");
-      }
-
       break;
     }
 
