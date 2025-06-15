@@ -5,6 +5,7 @@ import { PlayerProgress } from "@/components/PlayerProgress";
 import { useTyperacerGame } from "@/hooks/useTyperacerGame";
 import LobbyPage from "@/components/LobbyPage";
 import GamePage from "@/components/GamePage";
+import RankingsPage from "@/components/RankingsPage";
 
 export default function TyperacerPage() {
     const {
@@ -78,7 +79,7 @@ export default function TyperacerPage() {
             />
         );
     }    // Show game when in active or finished state
-    if (gameState === "active" || gameState === "finished") {
+    if (gameState === "active") {
         return (
             <GamePage
                 gameText={gameText}
@@ -87,9 +88,13 @@ export default function TyperacerPage() {
                 players={players}
                 playerId={playerId}
                 inputRef={inputRef as React.RefObject<HTMLInputElement>}
-                rankings={rankings}
                 gameState={gameState}
             />
+        );
+    }   // Show rankings when the game is finished
+    if (gameState === "finished") {
+        return (
+            <RankingsPage rankings={rankings}/>
         );
     }
 

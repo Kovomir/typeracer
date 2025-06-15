@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, List, Paper } from "@mui/material";
 import { CurrentPlayerGame } from "./CurrentPlayerGame";
-import { Player } from "../types/game";
+import { Player, Ranking } from "../types/game";
 import { OtherPlayerProgress } from "./OtherPlayerProgress";
 
 interface GamePageProps {
@@ -11,7 +11,6 @@ interface GamePageProps {
   players: Player[];
   playerId: string | null;
   inputRef: React.RefObject<HTMLInputElement>;
-  rankings: Array<{ playerId: string; playerName: string; time: number }>;
   gameState: string;
 }
 
@@ -22,7 +21,6 @@ const GamePage: React.FC<GamePageProps> = ({
   players,
   playerId,
   inputRef,
-  rankings,
   gameState,
 }) => {
   // Calculate the typed and remaining text for display
@@ -59,22 +57,6 @@ const GamePage: React.FC<GamePageProps> = ({
             </Box>
           ))}
       </Box>
-      {/* Rankings (shown when game is finished) */}
-      {gameState === "finished" && (
-        <Box mt={4}>
-          <Typography variant="h6" gutterBottom>
-            Final Rankings
-          </Typography>
-          <List>
-            {rankings.map((rank, index) => (
-              <Typography key={rank.playerId} variant="body1">
-                {index + 1}. {rank.playerName} - {(rank.time / 1000).toFixed(2)}
-                s
-              </Typography>
-            ))}
-          </List>
-        </Box>
-      )}
     </Box>
   );
 };
