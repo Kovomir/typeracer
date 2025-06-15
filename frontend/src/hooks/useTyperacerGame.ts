@@ -25,23 +25,24 @@ export function useTyperacerGame() {
   const joinWithName = useCallback((userName: string) => {
     setName(userName);
     setHasJoined(true);
-  }, []);
-
-  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  }, []);  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     if (!gameText) return;
     
+    // Prevent character deletion
     if (val.length > input.length) {
       const nextChar = gameText[input.length];
-      if (val[val.length - 1] === nextChar) {
+      const typedChar = val[val.length - 1];
+      
+      // Only update state and send message if the correct character was typed
+      if (typedChar === nextChar) {
         const newInput = input + nextChar;
         setInput(newInput);
         sendMessage({ type: "typing_update", text: newInput });
       }
-    } else if (val.length < input.length) {
-      setInput(val);
-      sendMessage({ type: "typing_update", text: val });
     }
+
+    e.target.value = input;
   }, [gameText, input, sendMessage]);
 
   useEffect(() => {

@@ -59,8 +59,7 @@ const GamePage: React.FC<GamePageProps> = ({
             {remainingText}
           </Box>
         </Box>
-
-        {/* Input field */}
+   
         <TextField
           fullWidth
           variant="outlined"
@@ -68,9 +67,38 @@ const GamePage: React.FC<GamePageProps> = ({
           onChange={handleInput}
           inputRef={inputRef}
           disabled={gameState === "finished"}
+          // Prevent Backspace, Delete, and other unwanted keys
+          onKeyDown={(e) => {
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+              e.preventDefault();
+            }
+            // Prevent shortcuts
+            if ((e.ctrlKey || e.metaKey) && 
+                (e.key === 'a' || e.key === 'c' || e.key === 'v' || e.key === 'x')) {
+              e.preventDefault();
+            }
+          }}
+          // Prevent paste
+          onPaste={(e) => {
+            e.preventDefault();
+          }}
+          // Prevent text selection
+          onSelect={(e) => {
+            e.preventDefault();
+            // @ts-ignore - current target is an input element
+            e.currentTarget.selectionStart = e.currentTarget.selectionEnd = e.currentTarget.value.length;
+          }}
+          // Prevent context menu
+          onContextMenu={(e) => e.preventDefault()}
           sx={{
             "& .MuiOutlinedInput-root": {
-              backgroundColor: "#fff"
+              backgroundColor: "#fff",
+              // Prevent text selection highlighting
+              "& input": {
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                cursor: "default"
+              }
             }
           }}
         />
