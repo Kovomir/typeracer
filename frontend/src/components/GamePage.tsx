@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Typography, TextField, List, Paper } from "@mui/material";
-import { PlayerProgress } from "./PlayerProgress";
+import { Box, Typography, List, Paper } from "@mui/material";
+import { CurrentPlayerGame } from "./CurrentPlayerGame";
 import { Player } from "../types/game";
+import { OtherPlayerProgress } from "./OtherPlayerProgress";
 
 interface GamePageProps {
   gameText: string;
@@ -28,101 +29,36 @@ const GamePage: React.FC<GamePageProps> = ({
   const typedText = gameText.slice(0, input.length);
   const currentChar = gameText[input.length] || "";
   const remainingText = gameText.slice(input.length + 1);
-
+  // Calculate current player's progress
+  const progress = Math.round((input.length / gameText.length) * 100);
+  const currentPlayer = players.find((p) => p.id === playerId);
   return (
     <Box p={4} maxWidth={800} mx="auto">
-      <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: "#f5f5f5" }}>
-        {/* Text display area */}
-        <Box 
-          sx={{ 
-            fontFamily: "monospace", 
-            fontSize: "1.2rem", 
-            lineHeight: 1.6,
-            whiteSpace: "pre-wrap",
-            mb: 2 
-          }}
-        >
-          <Box component="span" sx={{ backgroundColor: "#90ee90", color: "#000" }}>
-            {typedText}
-          </Box>
-          <Box 
-            component="span" 
-            sx={{ 
-              backgroundColor: currentChar ? "#ffeb3b" : "transparent",
-              color: "#000",
-              textDecoration: "underline"
-            }}
-          >
-            {currentChar}
-          </Box>
-          <Box component="span" sx={{ color: "#666" }}>
-            {remainingText}
-          </Box>
-        </Box>
-   
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={input}
-          onChange={handleInput}
-          inputRef={inputRef}
-          disabled={gameState === "finished"}
-          // Prevent Backspace, Delete, and other unwanted keys
-          onKeyDown={(e) => {
-            if (e.key === 'Backspace' || e.key === 'Delete') {
-              e.preventDefault();
-            }
-            // Prevent shortcuts
-            if ((e.ctrlKey || e.metaKey) && 
-                (e.key === 'a' || e.key === 'c' || e.key === 'v' || e.key === 'x')) {
-              e.preventDefault();
-            }
-          }}
-          // Prevent paste
-          onPaste={(e) => {
-            e.preventDefault();
-          }}
-          // Prevent text selection
-          onSelect={(e) => {
-            e.preventDefault();
-            // @ts-ignore - current target is an input element
-            e.currentTarget.selectionStart = e.currentTarget.selectionEnd = e.currentTarget.value.length;
-          }}
-          // Prevent context menu
-          onContextMenu={(e) => e.preventDefault()}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: "#fff",
-              // Prevent text selection highlighting
-              "& input": {
-                userSelect: "none",
-                WebkitUserSelect: "none",
-                cursor: "default"
-              }
-            }
-          }}
-        />
-      </Paper>
-
-      {/* Player progress list */}
-      <Typography variant="h6" gutterBottom>
-        Players Progress
-      </Typography>
-      <List>
+      <CurrentPlayerGame
+        gameText={gameText}
+        input={input}
+        handleInput={handleInput}
+        inputRef={inputRef}
+        gameState={gameState}
+      />
+      {/* Other players progress */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          Other Players Progress
+        </Typography>
         {players
-          .sort((a, b) => (b.currentText?.length || 0) - (a.currentText?.length || 0))
-          .map(player => (
-            <PlayerProgress
-              key={player.id}
-              name={player.name}
-              charsTyped={player.currentText?.length || 0}
-              totalChars={gameText.length}
-              text={gameText}
-              isCurrent={player.id === playerId}
-            />
+          .filter((player) => player.id !== currentPlayer?.id)
+          .map((player) => (
+            <Box key={player.id} sx={{ mb: 2 }}>
+              <OtherPlayerProgress
+                name={player.name}
+                charsTyped={player.currentText?.length || 0}
+                totalChars={gameText.length}
+                text={gameText}
+              />
+            </Box>
           ))}
-      </List>
-
+      </Box>
       {/* Rankings (shown when game is finished) */}
       {gameState === "finished" && (
         <Box mt={4}>
@@ -132,7 +68,8 @@ const GamePage: React.FC<GamePageProps> = ({
           <List>
             {rankings.map((rank, index) => (
               <Typography key={rank.playerId} variant="body1">
-                {index + 1}. {rank.playerName} - {(rank.time / 1000).toFixed(2)}s
+                {index + 1}. {rank.playerName} - {(rank.time / 1000).toFixed(2)}
+                s
               </Typography>
             ))}
           </List>
