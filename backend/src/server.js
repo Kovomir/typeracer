@@ -1,9 +1,37 @@
 import { handleMessage } from './game/ws_handlers.js';
 import { connectionMap } from './game/state.js';
 import { removePlayer } from './game/logic.js';
-import {WebSocketServer} from "ws";
+import { WebSocketServer } from "ws";
+import { createServer } from 'http';
 
-const wss = new WebSocketServer({ port: 3001 });
+const PORT = process.env.PORT || 3001;
+const server = createServer();
+let wss;
+
+const startServer = (port) => {
+  try {
+    wss = new WebSocketServer({ server });
+    server.listen(port, () => {
+      console.log(`🟢 WebSocket server running on ws://localhost:${port}`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.log(`⚠️ Port ${port} is in use, trying ${port + 1}...`);
+        startServer(port + 1);
+      } else {
+        console.error('❗ Server error:', err);
+      }
+    });
+
+    return wss;
+  } catch (err) {
+    console.error('❗ Failed to start server:', err);
+    process.exit(1);
+  }
+};
+
+wss = startServer(PORT);
 
 wss.on('connection', (ws) => {
   console.log('🔌 New connection established');
@@ -14,11 +42,19 @@ wss.on('connection', (ws) => {
       const data = JSON.parse(msg);
       console.log(`📨 Received message: ${data.type}`);
       handleMessage(ws, data, connectionMap);
-    } catch (err) {
-      console.error('⚠️ Invalid message:', err.message);
+    } catch (err) {      console.error('⚠️ Error processing message:', {
+        error: err.message,
+        stack: err.stack,
+        messageType: data?.type,
+        timestamp: new Date().toISOString()
+      });
       ws.send(JSON.stringify({
         type: 'error',
-        message: 'Invalid message format'
+        message: `Error: ${err.message}`,
+        details: {
+          type: data?.type,
+          timestamp: new Date().toISOString()
+        }
       }));
     }
   }); 
@@ -38,4 +74,14 @@ wss.on('connection', (ws) => {
   });
 });
 
-console.log('🟢 WebSocket server running on ws://localhost:3001');
+process.on('SIGINT', () => {
+  console.log('\n� Shutting down server...');
+  if (wss) {
+    wss.close(() => {
+      console.log('✅ WebSocket server closed');
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+});

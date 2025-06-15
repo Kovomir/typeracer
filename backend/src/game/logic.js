@@ -1,4 +1,4 @@
-import {players, currentGameText, gameState} from './state.js';
+import {players, gameState} from './state.js';
 import {GAME_TEXTS, gameStates, MAX_PLAYERS, MIN_PLAYERS} from './const.js';
 
 export const getPlayersList = () => {
@@ -22,12 +22,12 @@ export const broadcastToAllPlayers = (playerList, message) => {
 
 export const generateGameText = () => {
   const text = GAME_TEXTS[Math.floor(Math.random() * GAME_TEXTS.length)];
-  currentGameText = text;
+  gameState.currentText = text;
   return text;
 };
 
 export const calculateProgress = (player) => {
-  player.progress = Math.round((player.currentText.length / currentGameText.length) * 100);
+  player.progress = Math.round((player.currentText.length / gameState.currentText.length) * 100);
 };
 
 /**
