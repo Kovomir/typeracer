@@ -6,9 +6,13 @@ import {WebSocketServer} from "ws";
 const wss = new WebSocketServer({ port: 3001 });
 
 wss.on('connection', (ws) => {
+  console.log('🔌 New connection established');
+  console.log(`👥 Total connections: ${wss.clients.size}`);
+
   ws.on('message', (msg) => {
     try {
       const data = JSON.parse(msg);
+      console.log(`📨 Received message: ${data.type}`);
       handleMessage(ws, data, connectionMap);
     } catch (err) {
       console.error('⚠️ Invalid message:', err.message);
@@ -26,6 +30,7 @@ wss.on('connection', (ws) => {
       connectionMap.delete(ws);
     }
     console.log('❎ Connection closed');
+    console.log(`👥 Remaining connections: ${wss.clients.size}`);
   });
 
   ws.on('error', (err) => {
