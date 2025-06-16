@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Player } from "../types/game";
+import {useEffect, useState} from "react";
 
 const WS_URL = "ws://localhost:3001";
 

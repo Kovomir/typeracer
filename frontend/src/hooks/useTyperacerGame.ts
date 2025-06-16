@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useWebSocket } from "./useWebSocket";
-import { GameState, Player, Ranking } from "../types/game";
+import { GameState, Player, Ranking } from "@/types/game";
 
 export function useTyperacerGame() {
   const [gameText, setGameText] = useState("");

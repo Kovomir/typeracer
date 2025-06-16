@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { Box, Typography, TextField, Paper, Button, List } from "@mui/material";
-import { PlayerProgress } from "@/components/PlayerProgress";
-import { useTyperacerGame } from "@/hooks/useTyperacerGame";
+import {Box, Button, List, TextField, Typography} from "@mui/material";
+import {PlayerProgress} from "@/components/PlayerProgress";
+import {useTyperacerGame} from "@/hooks/useTyperacerGame";
 import LobbyPage from "@/components/LobbyPage";
 import GamePage from "@/components/GamePage";
 import RankingsPage from "@/components/RankingsPage";
@@ -11,7 +11,6 @@ export default function TyperacerPage() {
     const {
         gameText,
         input,
-        setInput,
         handleInput,
         players,
         playerId,
@@ -19,7 +18,6 @@ export default function TyperacerPage() {
         rankings,
         inputRef,
         name,
-        setName,
         hasJoined,
         joinWithName,
         isReady,
