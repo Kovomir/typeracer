@@ -9,7 +9,7 @@ import {
   Divider,
   Avatar 
 } from "@mui/material";
-import { Ranking } from "../types/game";
+import { Ranking } from "@/types/game";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 interface RankingsPageProps {

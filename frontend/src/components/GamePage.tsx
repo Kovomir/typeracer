@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Typography, List, Paper } from "@mui/material";
-import { CurrentPlayerGame } from "./CurrentPlayerGame";
-import { Player, Ranking } from "../types/game";
-import { OtherPlayerProgress } from "./OtherPlayerProgress";
+import {Box, Typography} from "@mui/material";
+import {CurrentPlayerGame} from "./CurrentPlayerGame";
+import {Player} from "@/types/game";
+import {OtherPlayerProgress} from "./OtherPlayerProgress";
 
 interface GamePageProps {
   gameText: string;
@@ -23,12 +23,6 @@ const GamePage: React.FC<GamePageProps> = ({
   inputRef,
   gameState,
 }) => {
-  // Calculate the typed and remaining text for display
-  const typedText = gameText.slice(0, input.length);
-  const currentChar = gameText[input.length] || "";
-  const remainingText = gameText.slice(input.length + 1);
-  // Calculate current player's progress
-  const progress = Math.round((input.length / gameText.length) * 100);
   const currentPlayer = players.find((p) => p.id === playerId);
   return (
     <Box p={4} maxWidth={800} mx="auto">

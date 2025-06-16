@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Box, Typography, Button, List } from "@mui/material";
-import { PlayerProgress } from "./PlayerProgress";
-import { Player } from "../types/game";
+import React, {useEffect} from "react";
+import {Box, Button, List, Typography} from "@mui/material";
+import {PlayerProgress} from "./PlayerProgress";
+import {Player} from "@/types/game";
 
 interface LobbyPageProps {
   name: string;
@@ -15,7 +15,6 @@ const LobbyPage: React.FC<LobbyPageProps> = ({
   name,
   players,
   playerId,
-  isReady,
   sendReady,
 }) => {
   const currentPlayer = players.find((p) => p.id === playerId);
