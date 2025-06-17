@@ -86,6 +86,9 @@ export function useTyperacerGame() {
           setGameState("finished");
           setRankings(msg.rankings);
           break;
+        case "error":
+          console.warn('An error occured', msg.text)
+          break;
       }
     });
   }, [isConnected, playerId, subscribeToMessages]);

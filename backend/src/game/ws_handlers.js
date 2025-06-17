@@ -155,7 +155,7 @@ export const handleMessage = (ws, data, connectionMap) => {
               p.finishTime = Date.now() - p.startTime;
             }
           });
-          
+
           const rankings = calculateRankings();
           console.log('🏆 Game finished! Final rankings:');
           rankings.forEach((rank, index) => {
