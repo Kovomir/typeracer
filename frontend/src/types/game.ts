@@ -13,7 +13,7 @@ export type GameState = "waiting" | "lobby" | "active" | "finished";
 export type Ranking = {
   playerId: string;
   playerName: string;
-  time: number;
+  finishTime: number;
   rank: number;
   charsTyped: number;
   totalChars: number;
