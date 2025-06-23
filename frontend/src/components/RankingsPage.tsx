@@ -7,10 +7,12 @@ import {
     ListItemText,
     Paper,
     Divider,
-    Avatar
+    Avatar,
+    Button
 } from "@mui/material";
 import {Ranking} from "@/types/game";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 interface RankingsPageProps {
     rankings: Ranking[];
@@ -100,6 +102,29 @@ const RankingsPage: React.FC<RankingsPageProps> = ({rankings}) => {
                         </React.Fragment>
                     ))}
                 </List>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        startIcon={<RestartAltIcon />}
+                        onClick={() => window.location.reload()}
+                        sx={{
+                            px: 4,
+                            py: 1.5,
+                            borderRadius: 2,
+                            fontWeight: 'bold',
+                            boxShadow: 3,
+                            '&:hover': {
+                                transform: 'scale(1.05)',
+                                transition: 'transform 0.2s'
+                            }
+                        }}
+                    >
+                        Play Again
+                    </Button>
+                </Box>
             </Paper>
         </Box>
     );
