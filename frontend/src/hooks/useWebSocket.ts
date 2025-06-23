@@ -1,14 +1,8 @@
 import {useEffect, useState} from "react";
+import {WebSocketMessage, MessageHandler, WebSocketGameMessage} from "@/types/websocket";
 
 // Get WebSocket URL from environment variables or use fallback
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001";
-
-type WebSocketMessage = {
-  type: string;
-  [key: string]: unknown;
-};
-
-type MessageHandler = (message: WebSocketMessage) => void;
 
 export function useWebSocket(playerName: string, enabled: boolean) {
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -47,7 +41,7 @@ export function useWebSocket(playerName: string, enabled: boolean) {
 
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      handler(message);
+      handler(message as WebSocketGameMessage);
     };
   };
 

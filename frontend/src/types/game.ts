@@ -21,11 +21,3 @@ export type Ranking = {
   charsTyped: number;
   totalChars: number;
 };
-
-export type GameStatus = {
-  gameText: string;
-  players: Player[];
-  playerId: string | null;
-  gameState: GameState;
-  rankings: Ranking[];
-};
