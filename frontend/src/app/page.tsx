@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import {Box, Button, List, TextField, Typography} from "@mui/material";
-import {PlayerProgress} from "@/components/PlayerProgress";
 import {useTyperacerGame} from "@/hooks/useTyperacerGame";
 import LobbyPage from "@/components/LobbyPage";
 import GamePage from "@/components/GamePage";
