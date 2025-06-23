@@ -6,6 +6,7 @@ import {useTyperacerGame} from "@/hooks/useTyperacerGame";
 import LobbyPage from "@/components/LobbyPage";
 import GamePage from "@/components/GamePage";
 import RankingsPage from "@/components/RankingsPage";
+import {PlayerInLoby} from "@/components/PlayerInLoby";
 
 export default function TyperacerPage() {
     const {
@@ -102,12 +103,9 @@ export default function TyperacerPage() {
             <Typography variant="h4" gutterBottom>Waiting for Players</Typography>
             <List>
                 {players.map(p => (
-                    <PlayerProgress
+                    <PlayerInLoby
                         key={p.id}
                         name={p.name}
-                        charsTyped={0}
-                        totalChars={0}
-                        text=""
                         isCurrent={p.id === playerId}
                     />
                 ))}
