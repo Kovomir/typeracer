@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 
-const WS_URL = "ws://localhost:3001";
+// Get WebSocket URL from environment variables or use fallback
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001";
 
 type WebSocketMessage = {
   type: string;
