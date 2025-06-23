@@ -14,7 +14,7 @@ export function useTyperacerGame() {
   const [isReady, setIsReady] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
 
-  const { isConnected, sendMessage, subscribeToMessages } = useWebSocket(name, hasJoined);
+  const { sendMessage, subscribeToMessages } = useWebSocket(name, hasJoined);
 
   const sendReady = useCallback(() => {
     sendMessage({
@@ -46,11 +46,10 @@ export function useTyperacerGame() {
   }, [gameText, input, sendMessage]);
 
   useEffect(() => {
-    if (!isConnected) return;
-
     subscribeToMessages((msg) => {
       switch (msg.type) {
         case "game_joined":
+          console.log('game_joined setting playerId ' + msg.playerId)
           setPlayerId(msg.playerId);
           setPlayers(msg.players);
           setGameState(msg.gameState);
@@ -91,7 +90,7 @@ export function useTyperacerGame() {
           break;
       }
     });
-  }, [isConnected, playerId, subscribeToMessages]);
+  }, [playerId, subscribeToMessages]);
 
   return {
     gameText,
