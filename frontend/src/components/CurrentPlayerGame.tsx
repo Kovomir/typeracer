@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, TextField, Paper } from "@mui/material";
+import { Box, Typography, TextField, Paper, LinearProgress } from "@mui/material";
 
 interface CurrentPlayerGameProps {
   gameText: string;
@@ -27,11 +27,18 @@ export const CurrentPlayerGame: React.FC<CurrentPlayerGameProps> = ({
       {/* Current player progress */}
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">
-          Your Progress: {progress}%
+          Your Progress
         </Typography>
-        <Typography>
-          {input.length} / {gameText.length} characters
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <LinearProgress 
+            variant="determinate" 
+            value={progress} 
+            sx={{ width: 100, height: 10, borderRadius: 1 }} 
+          />
+          <Typography variant="body2" color="text.secondary">
+            {input.length}/{gameText.length} ({progress}%)
+          </Typography>
+        </Box>
       </Box>
 
       {/* Text display area */}
@@ -39,12 +46,18 @@ export const CurrentPlayerGame: React.FC<CurrentPlayerGameProps> = ({
         sx={{ 
           fontFamily: "monospace", 
           fontSize: "1.2rem", 
-          lineHeight: 1.6,
+          lineHeight: 1.4,
           whiteSpace: "pre-wrap",
-          mb: 2 
+          mb: 2,
+          backgroundColor: "#f5f5f5",
+          p: 1.5,
+          borderRadius: 1,
+          minHeight: "5em",
+          maxHeight: "7em",
+          overflow: "auto"
         }}
       >
-        <Box component="span" sx={{ backgroundColor: "#90ee90", color: "#000" }}>
+        <Box component="span" sx={{ backgroundColor: "#4caf50", color: "white" }}>
           {typedText}
         </Box>
         <Box 

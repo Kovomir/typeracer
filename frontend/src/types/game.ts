@@ -6,6 +6,9 @@ export type Player = {
   isReady?: boolean;
   startTime?: number;
   finishTime?: number;
+  progress?: number;
+  charsTyped?: number;
+  totalChars?: number;
 };
 
 export type GameState = "waiting" | "lobby" | "active" | "finished";

@@ -76,7 +76,13 @@ export function useTyperacerGame() {
         case "player_progress":
           setPlayers((prev) => 
             prev.map(p => p.id === msg.playerId 
-              ? { ...p, progress: msg.progress, finished: msg.finished } 
+              ? { 
+                  ...p, 
+                  progress: msg.progress, 
+                  charsTyped: msg.charsTyped,
+                  totalChars: msg.totalChars,
+                  finished: msg.finished 
+                } 
               : p
             )
           );
