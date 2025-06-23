@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {Box, Button, List, Typography} from "@mui/material";
-import {PlayerProgress} from "./PlayerProgress";
 import {Player} from "@/types/game";
+import {PlayerInLoby} from "@/components/PlayerInLoby";
 
 interface LobbyPageProps {
   name: string;
@@ -55,12 +55,9 @@ const LobbyPage: React.FC<LobbyPageProps> = ({
       </Typography>
       <List>
         {players.map((p) => (
-          <PlayerProgress
+          <PlayerInLoby
             key={p.id}
             name={`${p.name} ${p.isReady ? "✓" : "✗"}`}
-            charsTyped={0}
-            totalChars={0}
-            text=""
             isCurrent={p.id === playerId}
           />
         ))}
