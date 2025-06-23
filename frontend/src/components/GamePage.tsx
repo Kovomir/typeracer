@@ -44,8 +44,8 @@ const GamePage: React.FC<GamePageProps> = ({
             <Box key={player.id} sx={{ mb: 2 }}>
               <OtherPlayerProgress
                 name={player.name}
-                charsTyped={player.currentText?.length || 0}
-                totalChars={gameText.length}
+                charsTyped={player.charsTyped || player.currentText?.length || 0}
+                totalChars={player.totalChars || gameText.length}
                 text={gameText}
               />
             </Box>

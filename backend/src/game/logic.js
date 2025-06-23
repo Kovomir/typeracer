@@ -45,7 +45,7 @@ export const removePlayer = (player) => {
       type: "player_left",
       playerId: player.id,
       players: getPlayersList(),
-      gameState: gameState.value,
+      gameState: gameState.value
     });
 
     // Reset to WAITING if players drop below minimum during LOBBY or ACTIVE

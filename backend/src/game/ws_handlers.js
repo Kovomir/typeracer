@@ -118,6 +118,8 @@ export const handleMessage = (ws, data, connectionMap) => {
             p.finished = false;
             p.finishTime = null;
             p.startTime = startTime;
+            p.charsTyped = 0;
+            p.totalChars = gameText.length;
           });
 
           broadcastToAllPlayers(players, {
@@ -179,6 +181,8 @@ export const handleMessage = (ws, data, connectionMap) => {
           type: "player_progress",
           playerId: player.id,
           progress: player.progress,
+          charsTyped: player.currentText.length,
+          totalChars: gameState.currentText.length,
           finished: player.finished,
         });
         break;
