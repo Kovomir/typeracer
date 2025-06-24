@@ -12,44 +12,51 @@ export function useTyperacerGame() {
   const [name, setName] = useState<string>("");
   const [hasJoined, setHasJoined] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null) as React.RefObject<HTMLInputElement>;
+  const inputRef = useRef<HTMLInputElement>(
+    null
+  ) as React.RefObject<HTMLInputElement>;
 
   const { sendMessage, subscribeToMessages } = useWebSocket(name, hasJoined);
 
   const sendReady = useCallback(() => {
     sendMessage({
-      type: "player_ready"
+      type: "player_ready",
     });
   }, [sendMessage]);
 
   const joinWithName = useCallback((userName: string) => {
     setName(userName);
     setHasJoined(true);
-  }, []);  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (!gameText) return;
-    
-    // Prevent character deletion
-    if (val.length > input.length) {
-      const nextChar = gameText[input.length];
-      const typedChar = val[val.length - 1];
-      
-      // Only update state and send message if the correct character was typed
-      if (typedChar === nextChar) {
-        const newInput = input + nextChar;
-        setInput(newInput);
-        sendMessage({ type: "typing_update", text: newInput });
-      }
-    }
+  }, []);
+  
+  const handleInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      if (!gameText) return;
 
-    e.target.value = input;
-  }, [gameText, input, sendMessage]);
+      // Prevent character deletion
+      if (val.length > input.length) {
+        const nextChar = gameText[input.length];
+        const typedChar = val[val.length - 1];
+
+        // Only update state and send message if the correct character was typed
+        if (typedChar === nextChar) {
+          const newInput = input + nextChar;
+          setInput(newInput);
+          sendMessage({ type: "typing_update", text: newInput });
+        }
+      }
+
+      e.target.value = input;
+    },
+    [gameText, input, sendMessage]
+  );
 
   useEffect(() => {
     subscribeToMessages((msg) => {
       switch (msg.type) {
         case "game_joined":
-          console.log('game_joined setting playerId ' + msg.playerId)
+          console.log("game_joined setting playerId " + msg.playerId);
           setPlayerId(msg.playerId);
           setPlayers(msg.players);
           setGameState(msg.gameState);
@@ -59,7 +66,9 @@ export function useTyperacerGame() {
           setPlayers(msg.players);
           setGameState(msg.gameState);
           // Find current player in updated players list to sync ready state
-          const currentPlayer = msg.players.find((p: Player) => p.id === playerId);
+          const currentPlayer = msg.players.find(
+            (p: Player) => p.id === playerId
+          );
           if (currentPlayer) {
             setIsReady(currentPlayer.isReady || false);
           }
@@ -74,16 +83,17 @@ export function useTyperacerGame() {
           setTimeout(() => inputRef.current?.focus(), 100);
           break;
         case "player_progress":
-          setPlayers((prev) => 
-            prev.map(p => p.id === msg.playerId 
-              ? { 
-                  ...p, 
-                  progress: msg.progress, 
-                  charsTyped: msg.charsTyped,
-                  totalChars: msg.totalChars,
-                  finished: msg.finished 
-                } 
-              : p
+          setPlayers((prev) =>
+            prev.map((p) =>
+              p.id === msg.playerId
+                ? {
+                    ...p,
+                    progress: msg.progress,
+                    charsTyped: msg.charsTyped,
+                    totalChars: msg.totalChars,
+                    finished: msg.finished,
+                  }
+                : p
             )
           );
           break;
@@ -92,7 +102,7 @@ export function useTyperacerGame() {
           setRankings(msg.rankings);
           break;
         case "error":
-          console.warn('An error occured', msg.text)
+          console.warn("An error occured", msg.text);
           break;
       }
     });
