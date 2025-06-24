@@ -3,9 +3,19 @@ import {connectionMap} from './game/state.js';
 import {removePlayer} from './game/logic.js';
 import {WebSocketServer} from "ws";
 import {createServer} from 'http';
+import express from 'express';
+import cors from 'cors';
 
 const PORT = process.env.PORT || 3001;
-const server = createServer();
+const app = express();
+app.use(cors());
+
+app.get('/wake-up', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+const server = createServer(app);
+
 let wss;
 
 const startServer = (port) => {

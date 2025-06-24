@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {WebSocketMessage, MessageHandler, WebSocketGameMessage} from "@/types/websocket";
+import {wakeUpServer} from "@/utils/serverUtils";
 
 // Get WebSocket URL from environment variables or use fallback
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001";
@@ -10,6 +11,8 @@ export function useWebSocket(playerName: string, enabled: boolean) {
 
   useEffect(() => {
     if (!enabled || !playerName) return;
+
+    wakeUpServer(WS_URL);
 
     const socket = new WebSocket(WS_URL);
     setWs(socket);
