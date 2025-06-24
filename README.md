@@ -4,6 +4,9 @@ A real-time multiplayer typing game built with Next.js, React, TypeScript, and W
 
 👉 **Play it here:** [🚀 TypeRacer Live Game](https://typeracer-eight.vercel.app/)
 
+Since Render free tier spins the backend server down after not being used for some time, the app will not work correctly until the backend server wakes up.
+If the game doesn't work try again in 30 seconds. 
+
 ## Project Structure
 
 This project consists of two main parts:
