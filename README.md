@@ -2,6 +2,8 @@
 
 A real-time multiplayer typing game built with Next.js, React, TypeScript, and WebSockets.
 
+👉 **Play it here:** [🚀 TypeRacer Live Game](https://typeracer-eight.vercel.app/)
+
 ## Project Structure
 
 This project consists of two main parts:
