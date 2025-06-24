@@ -22,7 +22,8 @@ export async function wakeUpServer(websocketUrl: string): Promise<void> {
       // Only log to console if there's an error
       console.log('Backend appears to be down. It might be starting up soon...');
     });
-  } catch (_) {
+  } catch (error) {
+    console.log(error)
     // Silently ignore any errors
   }
 }
